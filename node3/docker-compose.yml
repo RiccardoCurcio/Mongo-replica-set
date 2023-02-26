@@ -1,0 +1,24 @@
+version: "3.2"
+services:
+  node3:
+    build:
+      context: ./.docker/mongo
+    env_file:
+        - .env
+    container_name: node3.${HOST_NAME}
+    hostname: node3.${HOST_NAME}
+    restart: unless-stopped
+    volumes:
+      - ./.docker/mongo-files/data:/data/db
+      - ./key:/opt/keyfile
+    ports:
+      - "${NODE_PORT}:27017"
+    extra_hosts:
+      - "node1.${HOST_NAME}:${NODE1_HOST}"
+      - "node2.${HOST_NAME}:${NODE2_HOST}"
+      - "node3.${HOST_NAME}:${NODE_HOST}"
+    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet "rs0"
+networks:
+  default:
+    name:
+      net_${ENV}_${PREFIX}_backend
