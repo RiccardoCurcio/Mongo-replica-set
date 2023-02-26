@@ -1,5 +1,5 @@
 # mongo-replica-set
-docker mongo replica set
+docker mongo replica set on the same server
 
 create .env file in node1, node2 and node3
 
