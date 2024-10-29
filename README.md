@@ -31,7 +31,7 @@ $ cd node1
 
 change line 20
 
-    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet "rs0"
+    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet ${REPLICA_SET_NAME} --bind_ip localhost,node1.${HOST_NAME}
 to
 
     command: mongod
@@ -40,7 +40,7 @@ Start node1 and create users
 ```bash
 $ docker-compose build --no-cache
 $ docker-compose up
-$ docker exec -it node1.clustermongo.local bash
+$ docker exec -it node1.cluster_mongo.local bash
 
 root@node1:/# mongosh
 
@@ -64,29 +64,28 @@ change line 20
     command: mongod
 to
 
-    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet "rs0"
+    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet ${REPLICA_SET_NAME} --bind_ip localhost,node1.${HOST_NAME}
 
 Build and start node1
 ```bash
 $ docker-compose build --no-cache
 $ docker-compose up
-$ docker exec -it node1.clustermongo.local bash
+$ docker exec -it node1.cluster_mongo.local bash
 
 root@node1:/# mongosh
 
 > use admin
 > db.auth("rootAdmin", "password");
-> rs.initiate()
 ```
 
 Start node2 and node3 and return in node1
 
 ```bash
-> rs.add("node2.clustermongo.local")
-> rs.add("node2.clustermongo.local")
+> rs.initiate({_id: "mongo_replica_set_1", members: [{_id: 0, host: "node1.cluster_mongo.local"}, {_id: 1, host: "node2.cluster_mongo.local"}, {_id: 2, host: "node3.cluster_mongo.local"}]});
+
 ```
 
 Edit /etc/hosts and insert this line (only if the nodes reside on the same server)
 ```
-127.0.0.1	node1.clustermongo.local node2.clustermongo.local node3.clustermongo.local
+127.0.0.1	node1.cluster_mongo.local node2.cluster_mongo.local node3.cluster_mongo.local
 ```

@@ -1,4 +1,3 @@
-version: "3.2"
 services:
   node3:
     build:
@@ -12,13 +11,9 @@ services:
       - ./.docker/mongo-files/data:/data/db
       - ./key:/opt/keyfile
     ports:
-      - "${NODE_PORT}:27017"
-    extra_hosts:
-      - "node1.${HOST_NAME}:${NODE1_HOST}"
-      - "node2.${HOST_NAME}:${NODE2_HOST}"
-      - "node3.${HOST_NAME}:${NODE_HOST}"
-    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet "rs0"
+      - "${NODE3_EXTERNAL_PORT}:${NODE3_INTERNAL_PORT}"
+    command: mongod --keyFile /opt/keyfile/mongodb-keyfile --replSet ${REPLICA_SET_NAME} --bind_ip localhost,node3.${HOST_NAME}
 networks:
   default:
     name:
-      net_${ENV}_${PREFIX}_backend
+      net_${ENV}_${SUFFIX}
